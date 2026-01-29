@@ -1,11 +1,5 @@
 import "dotenv/config";
-import {
-  Client,
-  GatewayIntentBits,
-  REST,
-  Routes,
-  SlashCommandBuilder,
-} from "discord.js";
+import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from "discord.js";
 import { commands } from "./commands";
 import type { Event } from "./types";
 import { clientReady } from "./events/clientReady.js";
@@ -13,9 +7,7 @@ import { messageCreate } from "./events/messageCreate.js";
 import { createInteractionHandler } from "./events/interactionCreate.js";
 
 if (!process.env.DISCORD_TOKEN || !process.env.DISCORD_CLIENT_ID) {
-  throw new Error(
-    "DISCORD_TOKEN and DISCORD_CLIENT_ID must be set in environment variables"
-  );
+  throw new Error("DISCORD_TOKEN and DISCORD_CLIENT_ID must be set in environment variables");
 }
 
 const token = process.env.DISCORD_TOKEN;
@@ -34,7 +26,9 @@ async function registerCommands(token: string, clientId: string) {
 
   const commandData = [...commands.values()]
     .filter((cmd) => cmd.slash)
-    .map((cmd) => new SlashCommandBuilder().setName(cmd.name).setDescription(cmd.description).toJSON());
+    .map((cmd) =>
+      new SlashCommandBuilder().setName(cmd.name).setDescription(cmd.description).toJSON(),
+    );
 
   console.log("Started refreshing application (/) commands.");
   await rest.put(Routes.applicationCommands(clientId), { body: commandData });

@@ -1,9 +1,7 @@
 import type { Client, Interaction } from "discord.js";
 import type { Command, Event } from "../types";
 
-export function createInteractionHandler(
-  commands: Map<string, Command>
-): Event {
+export function createInteractionHandler(commands: Map<string, Command>): Event {
   return {
     name: "interactionCreate",
     async execute(_client: Client, ...args: unknown[]) {

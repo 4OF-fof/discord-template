@@ -152,9 +152,7 @@ describe("messageCreate event", () => {
 
     await messageCreate.execute(createMockClient(), message);
 
-    expect(message.reply).toHaveBeenCalledWith(
-      "コマンドの実行中にエラーが発生しました。"
-    );
+    expect(message.reply).toHaveBeenCalledWith("コマンドの実行中にエラーが発生しました。");
   });
 
   it("should pick command by registration order when multiple match", async () => {

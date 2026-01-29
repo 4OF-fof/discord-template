@@ -3,7 +3,8 @@ import type { Event, Command } from "../types";
 import { commands, commandOrder } from "../commands";
 
 const sortByOrder = (a: Command, b: Command) =>
-  (commandOrder.get(a.name) ?? Number.MAX_SAFE_INTEGER) - (commandOrder.get(b.name) ?? Number.MAX_SAFE_INTEGER);
+  (commandOrder.get(a.name) ?? Number.MAX_SAFE_INTEGER) -
+  (commandOrder.get(b.name) ?? Number.MAX_SAFE_INTEGER);
 
 export const messageCreate: Event = {
   name: "messageCreate",
@@ -29,7 +30,10 @@ export const messageCreate: Event = {
 
     // Mention-based commands
     if (message.mentions.has(client.user)) {
-      const textWithoutMentions = message.content.replace(/<@!?\d+>/g, "").trim().toLowerCase();
+      const textWithoutMentions = message.content
+        .replace(/<@!?\d+>/g, "")
+        .trim()
+        .toLowerCase();
 
       const mentionMatches = Array.from(commands.values()).filter((cmd: Command) => {
         const cfg = cmd.mention;
@@ -47,7 +51,7 @@ export const messageCreate: Event = {
 
     // Message keyword-based commands
     const messageMatches = Array.from(commands.values()).filter((cmd: Command) =>
-      Boolean(cmd.message?.keywords.some((kw: string) => contentLower.includes(kw.toLowerCase())))
+      Boolean(cmd.message?.keywords.some((kw: string) => contentLower.includes(kw.toLowerCase()))),
     );
 
     if (messageMatches.length > 0) {

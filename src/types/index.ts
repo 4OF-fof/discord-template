@@ -6,9 +6,7 @@ export interface Command {
   slash?: boolean;
   mention?: { keywords: string[] };
   message?: { keywords: string[] };
-  execute: (
-    interactionOrMessage: ChatInputCommandInteraction | Message
-  ) => Promise<void>;
+  execute: (interactionOrMessage: ChatInputCommandInteraction | Message) => Promise<void>;
 }
 
 export interface Event {
