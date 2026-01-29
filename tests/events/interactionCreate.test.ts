@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { createInteractionHandler } from "../../src/events/interactionCreate.js";
 import type { Command } from "../../src/types/index.js";
 
@@ -24,6 +24,10 @@ function createMockInteraction(overrides: Record<string, unknown> = {}) {
 }
 
 describe("interactionCreate event", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("should execute the matching command", async () => {
     const cmd = createMockCommand();
     const commands = new Map([["test", cmd]]);
@@ -49,24 +53,23 @@ describe("interactionCreate event", () => {
   });
 
   it("should log error for unknown command", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const commands = new Map<string, Command>();
     const handler = createInteractionHandler(commands);
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const interaction = createMockInteraction({ commandName: "unknown" });
 
     await handler.execute({} as any, interaction);
 
-    expect(consoleSpy).toHaveBeenCalledWith("Command not found: unknown");
-    consoleSpy.mockRestore();
+    expect(console.error).toHaveBeenCalledWith("Command not found: unknown");
   });
 
   it("should reply with error message when command throws", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const cmd = createMockCommand({
       execute: vi.fn().mockRejectedValue(new Error("fail")),
     });
     const commands = new Map([["test", cmd]]);
     const handler = createInteractionHandler(commands);
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const interaction = createMockInteraction();
 
     await handler.execute({} as any, interaction);
@@ -75,16 +78,15 @@ describe("interactionCreate event", () => {
       content: "コマンドの実行中にエラーが発生しました。",
       ephemeral: true,
     });
-    consoleSpy.mockRestore();
   });
 
   it("should use followUp when already replied", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const cmd = createMockCommand({
       execute: vi.fn().mockRejectedValue(new Error("fail")),
     });
     const commands = new Map([["test", cmd]]);
     const handler = createInteractionHandler(commands);
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const interaction = createMockInteraction({ replied: true });
 
     await handler.execute({} as any, interaction);
@@ -94,6 +96,5 @@ describe("interactionCreate event", () => {
       ephemeral: true,
     });
     expect(interaction.reply).not.toHaveBeenCalled();
-    consoleSpy.mockRestore();
   });
 });

@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const mockCommandsMap = new Map<string, any>();
 const mockCommandOrderMap = new Map<string, number>();
 
+// getter を使い、テストごとに mockCommandsMap / mockCommandOrderMap の中身を差し替え可能にする
 vi.mock("../../src/commands/index.js", () => {
   return {
     get commands() {
@@ -50,6 +51,10 @@ describe("messageCreate event", () => {
   beforeEach(() => {
     mockCommandsMap.clear();
     mockCommandOrderMap.clear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("should ignore bot messages", async () => {
@@ -142,7 +147,7 @@ describe("messageCreate event", () => {
       message: { keywords: ["ping"] },
       execute: vi.fn().mockRejectedValue(new Error("fail")),
     });
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const message = createMockMessage({ content: "ping" });
 
     await messageCreate.execute(createMockClient(), message);
@@ -150,7 +155,6 @@ describe("messageCreate event", () => {
     expect(message.reply).toHaveBeenCalledWith(
       "コマンドの実行中にエラーが発生しました。"
     );
-    consoleSpy.mockRestore();
   });
 
   it("should pick command by registration order when multiple match", async () => {

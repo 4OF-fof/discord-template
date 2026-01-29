@@ -4,15 +4,15 @@ export interface Command {
   name: string;
   description: string;
   slash?: boolean;
-  mention?: { keywords?: string[] };
+  mention?: { keywords: string[] };
   message?: { keywords: string[] };
   execute: (
     interactionOrMessage: ChatInputCommandInteraction | Message
   ) => Promise<void>;
 }
 
-export interface Event<T = unknown> {
+export interface Event {
   name: string;
   once?: boolean;
-  execute: (client: Client, ...args: T[]) => void | Promise<void>;
+  execute: (client: Client, ...args: unknown[]) => void | Promise<void>;
 }

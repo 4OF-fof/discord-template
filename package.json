@@ -9,7 +9,6 @@
     "dev": "tsx src/index.ts",
     "lint": "oxlint src",
     "lint:fix": "oxlint src --fix",
-    "format": "oxlint src --fix",
     "test": "vitest",
     "test:run": "vitest run"
   },

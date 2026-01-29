@@ -5,6 +5,10 @@ export const clientReady: Event = {
   name: "clientReady",
   once: true,
   execute(client: Client) {
-    console.log(`Logged in as ${client.user?.tag}`);
+    if (!client.user) {
+      console.error("Client user is not available");
+      return;
+    }
+    console.log(`Logged in as ${client.user.tag}`);
   },
 };
