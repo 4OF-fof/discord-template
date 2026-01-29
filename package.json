@@ -4,8 +4,9 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "start": "node dist/index.js",
+    "register": "tsx src/register.ts",
     "dev": "tsx src/index.ts",
     "lint": "oxlint src",
     "lint:fix": "oxlint src --fix",
@@ -17,9 +18,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsup": "^8.5.1",
     "oxfmt": "^0.16.0",
     "oxlint": "^0.16.0",
-    "tsx": "^4.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   },
