@@ -1,5 +1,5 @@
 import type { Command } from "../../types";
-import { executePing } from "./executePing.js";
+import { executePing } from "./executePing";
 
 export const ping: Command = {
   name: "ping",
