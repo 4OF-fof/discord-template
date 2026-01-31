@@ -35,11 +35,6 @@ export interface MessageContextMenuContext extends BaseContext {
 	message: Message;
 }
 
-export interface MentionContext extends BaseContext {
-	type: "mention";
-	message: Message;
-}
-
 export interface MessageContext extends BaseContext {
 	type: "message";
 	message: Message;
@@ -49,7 +44,6 @@ export type CommandContext =
 	| SlashContext
 	| UserContextMenuContext
 	| MessageContextMenuContext
-	| MentionContext
 	| MessageContext;
 
 type Handler<T> = { execute: (context: T) => Promise<void> };
@@ -60,7 +54,6 @@ export interface Command {
 	slash?: Handler<SlashContext>;
 	userContext?: Handler<UserContextMenuContext>;
 	messageContext?: Handler<MessageContextMenuContext>;
-	mention?: Handler<MentionContext> & { keywords: string[] };
 	message?: Handler<MessageContext> & { keywords: string[] };
 }
 

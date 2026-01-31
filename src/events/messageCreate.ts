@@ -19,37 +19,6 @@ export const messageCreate: Event<"messageCreate"> = {
 
 		const baseContext = { message, executor: message.author, reply } as const;
 
-		if (message.mentions.has(client.user)) {
-			const botMentionPattern = new RegExp(`^<@!?${client.user.id}>\\s*`);
-			const textWithoutMentions = message.content
-				.replace(botMentionPattern, "")
-				.trim()
-				.toLowerCase();
-
-			const mentionMatches = Array.from(commands.values()).filter((cmd: Command) => {
-				const cfg = cmd.mention;
-				if (!cfg) return false;
-				if (cfg.keywords.length === 0) return true;
-				return cfg.keywords.some((kw) => textWithoutMentions.includes(kw.toLowerCase()));
-			});
-
-			if (mentionMatches.length > 0) {
-				mentionMatches.sort(sortByOrder);
-				const command = mentionMatches[0];
-				try {
-					await command.mention!.execute({ type: "mention", ...baseContext });
-				} catch (error) {
-					console.error("Error executing command:", error);
-					try {
-						await message.reply("コマンドの実行中にエラーが発生しました。");
-					} catch (replyError) {
-						console.error("Failed to send error response:", replyError);
-					}
-				}
-				return;
-			}
-		}
-
 		const messageMatches = Array.from(commands.values()).filter((cmd: Command) =>
 			Boolean(cmd.message?.keywords.some((kw: string) => contentLower.includes(kw.toLowerCase()))),
 		);

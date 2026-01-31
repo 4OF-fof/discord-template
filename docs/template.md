@@ -17,7 +17,6 @@ src/commands/<command-name>/
 | `SlashContext` | スラッシュコマンド | `interaction: ChatInputCommandInteraction` |
 | `UserContextMenuContext` | ユーザー右クリックメニュー | `interaction: UserContextMenuCommandInteraction`, `targetUser: User` |
 | `MessageContextMenuContext` | メッセージ右クリックメニュー | `interaction: MessageContextMenuCommandInteraction`, `message: Message` |
-| `MentionContext` | Bot メンション | `message: Message` |
 | `MessageContext` | キーワード一致 | `message: Message` |
 
 全コンテキスト共通フィールド (`BaseContext`):
@@ -45,7 +44,6 @@ export const example: Command = {
   slash:          { execute: executeExample },
   userContext:    { execute: executeExample },
   messageContext: { execute: executeExample },
-  mention:        { keywords: ["example"], execute: executeExample },
   message:        { keywords: ["example"], execute: executeExample },
 };
 ```
@@ -85,14 +83,14 @@ export const example: Command = {
   name: "example",
   description: "コマンドの説明",
   slash:   { execute: executeSlash },
-  mention: { keywords: ["example"], execute: executeFromMessage },
+  message: { keywords: ["example"], execute: executeFromMessage },
 };
 ```
 
 ## コマンドの登録
 
 `src/commands/index.ts` の `commandList` 配列に追加する。
-配列内の順序がメッセージ系コマンド (mention, message) のマッチ優先度になる。
+配列内の順序がメッセージ系コマンド (message) のマッチ優先度になる。
 
 ```typescript
 import { example } from "./example";
