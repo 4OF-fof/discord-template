@@ -1,5 +1,11 @@
-import type { Client, Interaction, RepliableInteraction } from "discord.js";
-import type { Command, Event } from "../types";
+import type {
+	Client,
+	Interaction,
+	InteractionReplyOptions,
+	MessagePayload,
+	RepliableInteraction,
+} from "discord.js";
+import type { Command, CommandContext, Event } from "../types";
 
 async function handleError(interaction: RepliableInteraction, commandName: string, error: unknown) {
 	console.error(`Error executing command ${commandName}:`, error);
@@ -33,8 +39,34 @@ export function createInteractionHandler(commands: Map<string, Command>): Event<
 				return;
 			}
 
+			const reply: CommandContext["reply"] = (opts) =>
+				interaction.reply(opts as string | MessagePayload | InteractionReplyOptions);
+
 			try {
-				await command.execute(interaction);
+				if (interaction.isChatInputCommand() && command.slash) {
+					await command.slash.execute({
+						type: "slash",
+						interaction,
+						executor: interaction.user,
+						reply,
+					});
+				} else if (interaction.isUserContextMenuCommand() && command.userContext) {
+					await command.userContext.execute({
+						type: "userContext",
+						interaction,
+						executor: interaction.user,
+						targetUser: interaction.targetUser,
+						reply,
+					});
+				} else if (interaction.isMessageContextMenuCommand() && command.messageContext) {
+					await command.messageContext.execute({
+						type: "messageContext",
+						interaction,
+						executor: interaction.user,
+						message: interaction.targetMessage,
+						reply,
+					});
+				}
 			} catch (error) {
 				await handleError(interaction, interaction.commandName, error);
 			}

@@ -4,11 +4,8 @@ import { executePing } from "./executePing.js";
 export const ping: Command = {
   name: "ping",
   description: "Botの応答を確認します",
-  slash: true,
-  messageContext: true,
-
-  mention: { keywords: ["ping"] },
-  message: { keywords: ["ping"] },
-
-  execute: executePing,
+  slash: { execute: executePing },
+  messageContext: { execute: executePing },
+  mention: { keywords: ["ping"], execute: executePing },
+  message: { keywords: ["ping"], execute: executePing },
 };

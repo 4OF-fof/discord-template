@@ -1,5 +1,5 @@
-import type { Client, Message } from "discord.js";
-import type { Event, Command } from "../types";
+import type { Client, Message, MessagePayload, MessageReplyOptions } from "discord.js";
+import type { Event, Command, CommandContext } from "../types";
 import { commands, commandOrder } from "../commands";
 
 const sortByOrder = (a: Command, b: Command) =>
@@ -14,20 +14,11 @@ export const messageCreate: Event<"messageCreate"> = {
 
 		const contentLower = message.content.toLowerCase();
 
-		const executeCommand = async (command: Command) => {
-			try {
-				await command.execute(message);
-			} catch (error) {
-				console.error("Error executing command:", error);
-				try {
-					await message.reply("コマンドの実行中にエラーが発生しました。");
-				} catch (replyError) {
-					console.error("Failed to send error response:", replyError);
-				}
-			}
-		};
+		const reply: CommandContext["reply"] = (opts) =>
+			message.reply(opts as string | MessagePayload | MessageReplyOptions);
 
-		// Mention-based commands
+		const baseContext = { message, executor: message.author, reply } as const;
+
 		if (message.mentions.has(client.user)) {
 			const textWithoutMentions = message.content
 				.replace(/<@[!&]?\d+>/g, "")
@@ -43,19 +34,38 @@ export const messageCreate: Event<"messageCreate"> = {
 
 			if (mentionMatches.length > 0) {
 				mentionMatches.sort(sortByOrder);
-				await executeCommand(mentionMatches[0]);
+				const command = mentionMatches[0];
+				try {
+					await command.mention!.execute({ type: "mention", ...baseContext });
+				} catch (error) {
+					console.error("Error executing command:", error);
+					try {
+						await message.reply("コマンドの実行中にエラーが発生しました。");
+					} catch (replyError) {
+						console.error("Failed to send error response:", replyError);
+					}
+				}
 				return;
 			}
 		}
 
-		// Message keyword-based commands
 		const messageMatches = Array.from(commands.values()).filter((cmd: Command) =>
 			Boolean(cmd.message?.keywords.some((kw: string) => contentLower.includes(kw.toLowerCase()))),
 		);
 
 		if (messageMatches.length > 0) {
 			messageMatches.sort(sortByOrder);
-			await executeCommand(messageMatches[0]);
+			const command = messageMatches[0];
+			try {
+				await command.message!.execute({ type: "message", ...baseContext });
+			} catch (error) {
+				console.error("Error executing command:", error);
+				try {
+					await message.reply("コマンドの実行中にエラーが発生しました。");
+				} catch (replyError) {
+					console.error("Failed to send error response:", replyError);
+				}
+			}
 			return;
 		}
 	},

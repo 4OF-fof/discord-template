@@ -1,5 +1,5 @@
-import type { Command } from "../../types";
+import type { BaseContext } from "../../types";
 
-export const executePing: Command["execute"] = async (target) => {
-  await target.reply({ content: "Pong!" });
+export const executePing = async (ctx: BaseContext) => {
+  await ctx.reply({ content: "Pong!" });
 };
