@@ -39,8 +39,12 @@ export function createInteractionHandler(commands: Map<string, Command>): Event<
 				return;
 			}
 
-			const reply: CommandContext["reply"] = (opts) =>
-				interaction.reply(opts as string | MessagePayload | InteractionReplyOptions);
+			const reply: CommandContext["reply"] = (opts) => {
+				if (interaction.deferred || interaction.replied) {
+					return interaction.editReply(opts as string | MessagePayload);
+				}
+				return interaction.reply(opts as string | MessagePayload | InteractionReplyOptions);
+			};
 
 			try {
 				if (interaction.isChatInputCommand() && command.slash) {

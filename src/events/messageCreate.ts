@@ -20,8 +20,9 @@ export const messageCreate: Event<"messageCreate"> = {
 		const baseContext = { message, executor: message.author, reply } as const;
 
 		if (message.mentions.has(client.user)) {
+			const botMentionPattern = new RegExp(`^<@!?${client.user.id}>\\s*`);
 			const textWithoutMentions = message.content
-				.replace(/<@[!&]?\d+>/g, "")
+				.replace(botMentionPattern, "")
 				.trim()
 				.toLowerCase();
 
