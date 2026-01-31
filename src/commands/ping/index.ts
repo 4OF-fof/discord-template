@@ -5,6 +5,7 @@ export const ping: Command = {
   name: "ping",
   description: "Botの応答を確認します",
   slash: true,
+  messageContext: true,
 
   mention: { keywords: ["ping"] },
   message: { keywords: ["ping"] },

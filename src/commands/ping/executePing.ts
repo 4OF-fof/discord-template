@@ -1,5 +1,5 @@
-import type { ChatInputCommandInteraction, Message } from "discord.js";
+import type { Command } from "../../types";
 
-export async function executePing(target: ChatInputCommandInteraction | Message): Promise<void> {
+export const executePing: Command["execute"] = async (target) => {
   await target.reply({ content: "Pong!" });
-}
+};
